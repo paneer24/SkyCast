@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">SkyCast</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="default_web_client_id">skycast-d859c</string>
+    <string name="welcome_back">Welcome Back!</string>
+    <string name="sign_in_to_continue">Sign in to continue</string>
+    <string name="signing_in">Signing in…</string>
+    <string name="error_sign_in">Sign in failed: %1$s</string>
+    <string name="welcome_to_skycast">Welcome to SkyCast</string>
+    <string name="sign_in_subtitle">Your personal weather companion. Sign in to get started!</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="nav_open">Open Navigation Drawer</string>
+    <string name="nav_close">Close Navigation Drawer</string>
+</resources>

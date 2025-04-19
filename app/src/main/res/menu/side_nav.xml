@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/theme"
+        android:icon="@drawable/baseline_brush_24"
+        android:title="Theme" />
+    <item
+        android:id="@+id/Aboutus"
+        android:icon="@drawable/baseline_info_24"
+        android:title="About Us" />
+    <item
+        android:id="@+id/feedback"
+        android:icon="@drawable/baseline_comment_24"
+        android:title="Feedback" />
+    <item
+        android:id="@+id/rules"
+        android:icon="@drawable/baseline_rule_24"
+        android:title="Rules and Premissions" />
+    <item
+        android:id="@+id/conact"
+        android:icon="@drawable/baseline_contact_support_24"
+        android:title="Contact Us" />
+    <item
+        android:id="@+id/share"
+        android:icon="@drawable/baseline_share_24"
+        android:title="Share" />
+    <item
+        android:id="@+id/logout"
+        android:icon="@drawable/baseline_logout_24"
+        android:title="Logout" />
+
+
+</menu>
