@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,7 @@ import com.example.skycast.utils.Resource
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -52,12 +54,20 @@ class LoginFragment : Fragment() {
     }
 
     private fun setupGoogleSignIn() {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
+        try {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestId()
+                .requestProfile()
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .build()
 
-        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+            googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+            Log.d("LoginFragment", "Google Sign-In client initialized successfully")
+        } catch (e: Exception) {
+            Log.e("LoginFragment", "Error initializing Google Sign-In client", e)
+            showError("Failed to initialize Google Sign-In: ${e.message}")
+        }
     }
 
     private fun setupClickListeners() {
@@ -87,21 +97,43 @@ class LoginFragment : Fragment() {
     }
 
     private fun signIn() {
-        val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
+        try {
+            val signInIntent = googleSignInClient.signInIntent
+            startActivityForResult(signInIntent, RC_SIGN_IN)
+            Log.d("LoginFragment", "Starting Google Sign-In flow")
+        } catch (e: Exception) {
+            Log.e("LoginFragment", "Error starting Google Sign-In", e)
+            showError("Failed to start Google Sign-In: ${e.message}")
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_SIGN_IN) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 val account = task.getResult(ApiException::class.java)
+                Log.d("LoginFragment", "Google Sign-In successful, account: ${account?.email}")
+                
                 account?.idToken?.let { token ->
                     viewModel.signInWithGoogle(token)
+                } ?: run {
+                    Log.e("LoginFragment", "No ID token received from Google Sign-In")
+                    showError("Failed to get authentication token")
                 }
             } catch (e: ApiException) {
-                showError("Google sign in failed: ${e.message}")
+                Log.e("LoginFragment", "Google Sign-In failed with error code: ${e.statusCode}", e)
+                when (e.statusCode) {
+                    GoogleSignInStatusCodes.SIGN_IN_CANCELLED -> {
+                        showError("Sign in was cancelled")
+                    }
+                    GoogleSignInStatusCodes.SIGN_IN_FAILED -> {
+                        showError("Sign in failed. Please try again")
+                    }
+                    else -> {
+                        showError("Google sign in failed: ${e.message}")
+                    }
+                }
             }
         }
     }
